@@ -1,1 +1,37 @@
 
+name: Build Flutter APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Unzip project
+      run: unzip physics_review_app_pro.zip -d project
+
+    - name: Install Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Get packages
+      working-directory: project
+      run: flutter pub get
+
+    - name: Build APK
+      working-directory: project
+      run: flutter build apk --release
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: physics_app_release
+        path: project/build/app/outputs/flutter-apk/app-release.apk
